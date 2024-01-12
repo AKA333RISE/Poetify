@@ -10,7 +10,7 @@ filepath = tf.keras.utils.get_file('Shakesphere_reference.txt', 'https://storage
 
 #*************************************Preparing the Data**********************************************
 poem_text = open(filepath,'rb').read().decode(encoding='utf-8').lower()
-poem_text = poem_text[100000:800000]
+poem_text = poem_text[100000:1000000]
 
 characters = sorted(set(poem_text))
 
@@ -50,7 +50,7 @@ model.add(Dense(len(characters), activation='softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(lr=0.01))
 
-model.fit(x, y, batch_size=256, epochs=4)
+model.fit(x, y, batch_size=256, epochs=10)
 
 def sample(preds, temperature=1.0): #Helper function to generate some reasonable text.
     preds = np.asarray(preds).astype('float64')
@@ -63,19 +63,18 @@ def sample(preds, temperature=1.0): #Helper function to generate some reasonable
 #***********************************Generating the text*****************************************************
 
 def generate_text(length, temperature):
-    start_index = random.randint(0, len(text) - SEQ_LENGTH - 1)
+    start_index = random.randint(0, len(poem_text) - SEQ_LENGTH - 1)
     generated = ''
-    sentence = text[start_index: start_index + SEQ_LENGTH]
+    sentence = poem_text[start_index: start_index + SEQ_LENGTH]
     generated += sentence
     for i in range(length):
         x_predictions = np.zeros((1, SEQ_LENGTH, len(characters)))
         for t, char in enumerate(sentence):
-            x_predictions[0, t, char_to_index[char]] = 1
+            x_predictions[0, t, get_index[char]] = 1
 
         predictions = model.predict(x_predictions, verbose=0)[0]
-        next_index = sample(predictions,
-                                 temperature)
-        next_character = index_to_char[next_index]
+        next_index = sample(predictions, temperature)
+        next_character = get_char[next_index]
 
         generated += next_character
         sentence = sentence[1:] + next_character
