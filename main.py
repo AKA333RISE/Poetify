@@ -50,7 +50,7 @@ model.add(Dense(len(characters), activation='softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(lr=0.01))
 
-model.fit(x, y, batch_size=256, epochs=10)
+model.fit(x, y, batch_size=256, epochs=50)
 
 def sample(preds, temperature=1.0): #Helper function to generate some reasonable text.
     preds = np.asarray(preds).astype('float64')
